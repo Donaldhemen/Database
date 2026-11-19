@@ -1,0 +1,40 @@
+USE logistics_db;
+
+CREATE TABLE Drivers (
+  DriverID    INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  Name        VARCHAR(100) NOT NULL,
+  Rating      DECIMAL(3,2) NOT NULL DEFAULT 0.00,
+  TotalRides  INT UNSIGNED NOT NULL DEFAULT 0,
+  PRIMARY KEY (DriverID),
+  CONSTRAINT chk_drivers_rating CHECK (Rating BETWEEN 0 AND 5)
+);
+
+CREATE TABLE Riders (
+  RiderID  INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  Name     VARCHAR(100) NOT NULL,
+  City     VARCHAR(100) NOT NULL,
+  PRIMARY KEY (RiderID)
+);
+
+CREATE TABLE Rides (
+  RideID      INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  DriverID    INT UNSIGNED NOT NULL,
+  RiderID     INT UNSIGNED NOT NULL,
+  Fare        DECIMAL(10,2) NOT NULL,
+  Rating      TINYINT UNSIGNED NULL,
+  DistanceKM  DECIMAL(6,2) NOT NULL,
+  PRIMARY KEY (RideID),
+  CONSTRAINT fk_rides_driver FOREIGN KEY (DriverID) REFERENCES Drivers (DriverID),
+  CONSTRAINT fk_rides_rider  FOREIGN KEY (RiderID)  REFERENCES Riders (RiderID),
+  CONSTRAINT chk_rides_rating CHECK (Rating IS NULL OR Rating BETWEEN 1 AND 5)
+);
+
+CREATE TABLE Payments (
+  PaymentID      INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  RideID         INT UNSIGNED NOT NULL,
+  Amount         DECIMAL(10,2) NOT NULL,
+  PaymentMethod  ENUM('Cash','Card','Transfer','Mobile Money') NOT NULL,
+  PRIMARY KEY (PaymentID),
+  CONSTRAINT fk_payments_ride FOREIGN KEY (RideID) REFERENCES Rides (RideID)
+);
+
